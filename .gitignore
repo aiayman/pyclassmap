@@ -17,3 +17,6 @@ __pycache__/
 
 # personal workspace settings (the folder picker writes pyclassmap.root here)
 .vscode/
+
+# personal publishing checklist (accounts, SSH aliases) — never public
+PUBLISHING.md
