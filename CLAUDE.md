@@ -25,8 +25,8 @@ build step; the analyzer is stdlib-only Python.
 - `demo/expense_tracker` is a runnable expense tracker written to exercise
   all five relationship kinds (it is the only source of README imagery).
 - Marketplace publishing: use `npx @vscode/vsce`, not build_vsix.py — see
-  PUBLISHING.md. The `repository` URL in package.json is a placeholder that
-  must be set first.
+  PUBLISHING.md (untracked: it holds personal account and SSH details, so it
+  never goes in the repo).
 - Bump `version` in package.json for every feature change; CHANGELOG.md
   tracks releases.
 - Full development history and design decisions: `.claude/CONTEXT.md`
