@@ -11,3 +11,4 @@ build_vsix.py
 install.sh
 *.vsix
 images/*.svg
+.vscode/**
