@@ -402,7 +402,7 @@ async function pickRoot() {
 
   await vscode.workspace
     .getConfiguration("pyclassmap")
-    .update("root", value, vscode.ConfigurationTarget.Workspace);
+    .update("root", value || undefined, vscode.ConfigurationTarget.Workspace);
   // the configuration listener triggers the re-analysis
 }
 

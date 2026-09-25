@@ -12,7 +12,8 @@ FILES = ["package.json", "extension.js", "pdfgen.js", "svggen.js", "README.md",
          "analyzer/analyze.py",
          "media/diagram.js", "media/diagram.css", "media/icon.svg",
          "images/icon.png", "images/hero.png",
-         "images/filtering.gif", "images/docstrings.gif", "images/focus.gif"]
+         "images/filtering.gif", "images/docstrings.gif", "images/focus.gif",
+         "images/scope.gif"]
 
 MANIFEST = f"""<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">

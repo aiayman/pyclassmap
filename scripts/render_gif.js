@@ -57,10 +57,10 @@ function renderFrame(frame, W, H, originX, originY) {
     x += 26 + KIND_LABEL[k].length * 6.1;
   }
   if (frame.root) {
-    const label = "\u{1F4C1} " + frame.root;
-    const w = label.length * 6.6 + 16;
+    const label = "mapping: " + frame.root;
+    const w = label.length * 6.6 + 18;
     o.push(`<rect x="${W - w - 14}" y="${TOOLBAR_H / 2 - 9}" width="${w}" height="18" rx="3" fill="#4453"/>`);
-    o.push(`<text x="${W - w - 6}" y="${TOOLBAR_H / 2 + 4}" font-family="monospace" font-size="11" fill="${FG}">${esc(label)}</text>`);
+    o.push(`<text x="${W - w - 5}" y="${TOOLBAR_H / 2 + 4}" font-family="monospace" font-size="11" fill="${FG}">${esc(label)}</text>`);
   }
   if (frame.caption) {
     o.push(`<text x="14" y="${H - 14}" font-family="Helvetica,Arial,sans-serif" font-size="12" fill="${MUTED}">${esc(frame.caption)}</text>`);
@@ -165,7 +165,22 @@ const mk = (o) => computeView({ data, showExternals: false, ...o });
   build("docstrings.gif", frames, [200, 380]);
 }
 
-// 3) focus: whole project down to one subtree
+// 3) scope: widen to the whole workspace, tighten back to demo/
+{
+  const kinds = ["member", "transient", "received", "calls", "inherits"];
+  const wide = loadGraph(".");
+  const wideName = path.basename(path.resolve("."));
+  const vWide = computeView({ data: wide, kinds, showExternals: false, focus: null });
+  const vDemo = mk({ kinds, focus: null });
+  const frames = [
+    { nodes: vDemo.nodes, edges: vDemo.edges, kinds, root: rootName, caption: "mapping demo/ only" },
+    { nodes: vWide.nodes, edges: vWide.edges, kinds, root: wideName, caption: "widened to the whole workspace \u2014 the analyzer itself joins the map" },
+    { nodes: vDemo.nodes, edges: vDemo.edges, kinds, root: rootName, caption: "tightened back to demo/ with the folder picker" },
+  ];
+  build("scope.gif", frames, [240, 320, 300]);
+}
+
+// 4) focus: whole project down to one subtree
 {
   const kinds = ["member", "transient", "received", "calls", "inherits"];
   const vAll = mk({ kinds, focus: null });

@@ -40,7 +40,7 @@ counts and the current one marked, plus **Browse…** for anywhere else. Widen
 to the whole workspace or narrow to a single package in two clicks; the
 analysis re-runs immediately.
 
-![Switching scope and toggling relationship kinds](images/filtering.gif)
+![Widening the scope to the whole workspace, then tightening back to one folder](images/scope.gif)
 
 ### 🔗 Five relationship kinds
 
@@ -57,6 +57,8 @@ Toggle any combination from the filter picker or the diagram toolbar.
 hidden by default and can be shown with one checkbox — so you can enable
 `inherits` and see *your* hierarchy without every model pointing at its
 framework base.
+
+![Relationship kinds toggled on, one at a time](images/filtering.gif)
 
 ### 🗺️ Interactive diagram
 
