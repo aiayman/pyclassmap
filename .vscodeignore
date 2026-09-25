@@ -1,0 +1,13 @@
+# Dev-only files — kept in the GitHub repo, left out of the published package.
+demo/**
+scripts/**
+.claude/**
+.git/**
+.gitignore
+.vscodeignore
+CLAUDE.md
+PUBLISHING.md
+build_vsix.py
+install.sh
+*.vsix
+images/*.svg

@@ -1,0 +1,94 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+  font-family: var(--vscode-font-family);
+  font-size: 12px;
+}
+#toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--vscode-panel-border, #4444);
+}
+#toolbar label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+#toolbar input[type="text"] {
+  background: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border: 1px solid var(--vscode-input-border, transparent);
+  padding: 2px 6px;
+  margin-left: auto;
+}
+#toolbar button {
+  background: var(--vscode-button-secondaryBackground, #3337);
+  color: var(--vscode-button-secondaryForeground, inherit);
+  border: none;
+  padding: 3px 8px;
+  cursor: pointer;
+}
+.legend { border-bottom: 2px solid; padding-bottom: 1px; }
+.ext-toggle { border-bottom: 2px dotted #8888; padding-bottom: 1px; opacity: 0.85; }
+#canvas { width: 100%; height: calc(100% - 34px); cursor: grab; }
+#canvas:active { cursor: grabbing; }
+.empty { padding: 24px; opacity: 0.7; }
+
+/* edge kind colors — chosen to read on light and dark themes */
+.e-member    { color: #e5534b; stroke: #e5534b; fill: #e5534b; border-color: #e5534b; }
+.e-transient { color: #d29922; stroke: #d29922; fill: #d29922; border-color: #d29922; }
+.e-received  { color: #3fb950; stroke: #3fb950; fill: #3fb950; border-color: #3fb950; }
+.e-calls     { color: #58a6ff; stroke: #58a6ff; fill: #58a6ff; border-color: #58a6ff; }
+.e-inherits  { color: #bc8cff; stroke: #bc8cff; fill: #bc8cff; border-color: #bc8cff; }
+
+path.edge {
+  fill: none;
+  stroke-width: 1.4;
+  opacity: 0.85;
+}
+path.e-received { stroke-dasharray: 5 3; }
+path.e-calls    { stroke-dasharray: 2 3; }
+path.e-inherits { stroke-width: 1.8; }
+marker path.arrow { stroke-width: 1.4; }
+marker path.e-inherits { fill: var(--vscode-editor-background); }
+
+g.node rect {
+  fill: var(--vscode-editorWidget-background, #2223);
+  stroke: var(--vscode-editorWidget-border, #8886);
+  stroke-width: 1.2;
+}
+g.node.n-class rect    { stroke: var(--vscode-charts-blue, #58a6ff); }
+g.node.n-function rect { stroke: var(--vscode-charts-purple, #bc8cff); }
+g.node.n-module rect   { stroke: var(--vscode-charts-yellow, #d29922); stroke-dasharray: 4 2; }
+g.node.n-external rect { stroke: #8888; stroke-dasharray: 2 2; }
+g.node text {
+  fill: var(--vscode-editor-foreground);
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 12px;
+  pointer-events: none;
+}
+g.node text.chev {
+  pointer-events: all;
+  cursor: pointer;
+  text-anchor: start;
+  font-size: 11px;
+  opacity: 0.8;
+}
+g.node text.doc {
+  text-anchor: start;
+  font-size: 10px;
+  opacity: 0.7;
+  font-style: italic;
+}
+g.node { cursor: pointer; }
+g.node.focused rect { stroke-width: 2.5; }
+g.node.dim, path.edge.dim { opacity: 0.15; }

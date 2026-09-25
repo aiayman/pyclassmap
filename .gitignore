@@ -1,0 +1,16 @@
+# local Claude Code context — never publish
+.claude/
+
+# build artifacts
+*.vsix
+
+# scratch
+*.log
+
+# demo run output
+demo/expenses.json
+expenses.json
+
+# python bytecode
+__pycache__/
+*.py[cod]

@@ -1,0 +1,143 @@
+{
+  "name": "pyclassmap",
+  "displayName": "Python Class Map",
+  "description": "See your Python project's real architecture: who creates, holds, calls, and inherits whom — as a tree and an interactive diagram, with PDF/SVG export.",
+  "version": "0.5.0",
+  "publisher": "ayman",
+  "license": "MIT",
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#1b2a41",
+    "theme": "dark"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aiayman/pyclassmap"
+  },
+  "keywords": [
+    "python",
+    "class diagram",
+    "uml",
+    "architecture",
+    "visualization",
+    "dependency graph",
+    "ast",
+    "pyreverse"
+  ],
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Visualization",
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "pyclassmap",
+          "title": "Python Class Map",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "pyclassmap": [
+        {
+          "id": "pyclassmap.tree",
+          "name": "Instantiation Tree"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "pyclassmap.refresh",
+        "title": "PyClassMap: Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "pyclassmap.showDiagram",
+        "title": "PyClassMap: Show Diagram",
+        "icon": "$(type-hierarchy)"
+      },
+      {
+        "command": "pyclassmap.filter",
+        "title": "PyClassMap: Filter Edge Kinds",
+        "icon": "$(filter)"
+      },
+      {
+        "command": "pyclassmap.diagramFromHere",
+        "title": "Show Diagram from Here"
+      },
+      {
+        "command": "pyclassmap.exportPdf",
+        "title": "PyClassMap: Export Diagram (PDF/SVG)",
+        "icon": "$(export)"
+      },
+      {
+        "command": "pyclassmap.openSite",
+        "title": "PyClassMap: Open Source Location"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "pyclassmap.refresh",
+          "when": "view == pyclassmap.tree",
+          "group": "navigation@1"
+        },
+        {
+          "command": "pyclassmap.showDiagram",
+          "when": "view == pyclassmap.tree",
+          "group": "navigation@2"
+        },
+        {
+          "command": "pyclassmap.filter",
+          "when": "view == pyclassmap.tree",
+          "group": "navigation@3"
+        },
+        {
+          "command": "pyclassmap.exportPdf",
+          "when": "view == pyclassmap.tree",
+          "group": "navigation@4"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "pyclassmap.diagramFromHere",
+          "when": "view == pyclassmap.tree && viewItem == pcmNode"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Python Class Map",
+      "properties": {
+        "pyclassmap.pythonPath": {
+          "type": "string",
+          "default": "python3",
+          "description": "Python interpreter used to run the analyzer (any Python 3.8+, stdlib only)."
+        },
+        "pyclassmap.root": {
+          "type": "string",
+          "default": "",
+          "description": "Folder to analyze, relative to the workspace root. Empty = whole workspace."
+        },
+        "pyclassmap.exclude": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Extra directory names to exclude from analysis."
+        },
+        "pyclassmap.includeTests": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include test files and test directories in the analysis."
+        }
+      }
+    }
+  }
+}
