@@ -31,6 +31,17 @@ transitively reaches. Expand any node to see what it creates, holds, or
 calls; click to jump to the exact line of the instantiation. Re-analyzes
 automatically whenever you save a Python file.
 
+### 🎯 Always know what you're mapping
+
+The view header shows the folder currently being analyzed and how much was
+found — `demo · 23 nodes`. Click the folder button to change it: the picker
+lists every directory in the workspace that contains Python, with file
+counts and the current one marked, plus **Browse…** for anywhere else. Widen
+to the whole workspace or narrow to a single package in two clicks; the
+analysis re-runs immediately.
+
+![Switching scope and toggling relationship kinds](images/filtering.gif)
+
 ### 🔗 Five relationship kinds
 
 | Kind | Style | Meaning |
@@ -55,13 +66,15 @@ node → **Show Diagram from Here** to focus on one subtree. Edge labels show
 multiplicity (`×4` = instantiated at four sites). Fully theme-aware —
 readable in light and dark themes.
 
+![Drilling from the whole project down to one subtree](images/focus.gif)
+
 ### 📖 Docstrings, inline
 
 Nodes with a docstring show a `▸` chevron — expand them in place, or use
 **show docs** to expand every documented node at once. The tree view shows
 docstrings in hover tooltips.
 
-![Expanded docstrings inside diagram nodes](images/docstrings.png)
+![Expanding a docstring in place; the layout reflows around it](images/docstrings.gif)
 
 ### 📤 Export to PDF or SVG
 
@@ -95,6 +108,7 @@ python3 -m expense_tracker.cli      # from demo/, prints a monthly report
 | Command | |
 |---|---|
 | `PyClassMap: Refresh` | re-run the analysis now |
+| `PyClassMap: Set Folder to Map` | choose which folder to analyze |
 | `PyClassMap: Show Diagram` | open the interactive diagram |
 | `PyClassMap: Filter Edge Kinds` | choose relationship kinds + externals |
 | `PyClassMap: Export Diagram (PDF/SVG)` | export the current view |
@@ -104,7 +118,7 @@ python3 -m expense_tracker.cli      # from demo/, prints a monthly report
 | Setting | Default | |
 |---|---|---|
 | `pyclassmap.pythonPath` | `python3` | interpreter used to run the analyzer |
-| `pyclassmap.root` | workspace root | subfolder to analyze |
+| `pyclassmap.root` | workspace root | folder to analyze (relative or absolute); set it from the folder button |
 | `pyclassmap.exclude` | `[]` | extra directory names to skip |
 | `pyclassmap.includeTests` | `false` | include `tests/`, `test_*.py` |
 

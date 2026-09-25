@@ -66,10 +66,28 @@ function workspaceRoot() {
 }
 
 function analysisRoot() {
+  const sub = vscode.workspace.getConfiguration("pyclassmap").get("root") || "";
+  if (sub && path.isAbsolute(sub)) return sub;
   const base = workspaceRoot();
   if (!base) return null;
-  const sub = vscode.workspace.getConfiguration("pyclassmap").get("root") || "";
   return sub ? path.join(base, sub) : base;
+}
+
+// Short, human-readable name for whatever is currently being analyzed.
+function rootLabel() {
+  const base = workspaceRoot();
+  const root = analysisRoot();
+  if (!root) return "no folder open";
+  if (!base || root === base) return path.basename(root);
+  const rel = path.relative(base, root);
+  return rel && !rel.startsWith("..") ? rel : root;
+}
+
+// The indicator beside the view title: what is mapped, and how big it is.
+function updateViewDescription() {
+  if (!treeProvider || !treeProvider.view) return;
+  const n = graph ? Object.keys(graph.nodes).length : 0;
+  treeProvider.view.description = graph ? `${rootLabel()} · ${n} nodes` : rootLabel();
 }
 
 function runAnalyzer() {
@@ -119,6 +137,7 @@ async function refresh(silent) {
     if (treeProvider) {
       treeProvider.setMessage(undefined);
       treeProvider.fire();
+      updateViewDescription();
     }
     if (diagramPanel) postGraphToPanel();
   } catch (e) {
@@ -306,6 +325,87 @@ async function pickKinds() {
   if (diagramPanel) postGraphToPanel();
 }
 
+// ---------------------------------------------------------------- scope
+
+const SCAN_EXCLUDE =
+  "**/{node_modules,.venv,venv,env,.git,__pycache__,build,dist,site-packages,.tox,.mypy_cache}/**";
+
+// Rank every directory that contains Python, so the picker can offer the
+// places worth analyzing rather than a raw folder tree.
+async function pythonDirCounts(base) {
+  const files = await vscode.workspace.findFiles("**/*.py", SCAN_EXCLUDE, 5000);
+  const counts = new Map();
+  for (const f of files) {
+    let dir = path.dirname(f.fsPath);
+    for (;;) {
+      counts.set(dir, (counts.get(dir) || 0) + 1);
+      if (dir === base || dir.length <= base.length) break;
+      const parent = path.dirname(dir);
+      if (parent === dir) break;
+      dir = parent;
+    }
+  }
+  return counts;
+}
+
+async function pickRoot() {
+  const base = workspaceRoot();
+  if (!base) {
+    vscode.window.showWarningMessage("Python Class Map: open a folder first.");
+    return;
+  }
+  const current = analysisRoot();
+  const counts = await pythonDirCounts(base);
+  const items = [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 20)
+    .map(([dir, n]) => {
+      const rel = path.relative(base, dir);
+      return {
+        label: rel ? `$(folder) ${rel}` : `$(root-folder) ${path.basename(base)}`,
+        description:
+          `${n} .py file${n === 1 ? "" : "s"}` +
+          (rel ? "" : "  —  whole workspace") +
+          (dir === current ? "  •  current" : ""),
+        value: rel,
+      };
+    });
+  if (!items.length) {
+    vscode.window.showWarningMessage("Python Class Map: no Python files found in this workspace.");
+    return;
+  }
+  items.push({
+    label: "$(folder-opened) Browse…",
+    description: "choose any folder, inside or outside the workspace",
+    value: "__browse__",
+  });
+
+  const pick = await vscode.window.showQuickPick(items, {
+    title: "Python Class Map: which folder to map",
+    placeHolder: `currently mapping: ${rootLabel()}`,
+  });
+  if (!pick) return;
+
+  let value = pick.value;
+  if (value === "__browse__") {
+    const sel = await vscode.window.showOpenDialog({
+      canSelectFolders: true,
+      canSelectFiles: false,
+      canSelectMany: false,
+      defaultUri: vscode.Uri.file(current || base),
+      openLabel: "Map this folder",
+    });
+    if (!sel || !sel.length) return;
+    const rel = path.relative(base, sel[0].fsPath);
+    value = !rel ? "" : rel.startsWith("..") ? sel[0].fsPath : rel;
+  }
+
+  await vscode.workspace
+    .getConfiguration("pyclassmap")
+    .update("root", value, vscode.ConfigurationTarget.Workspace);
+  // the configuration listener triggers the re-analysis
+}
+
 // ---------------------------------------------------------------- diagram
 
 function postGraphToPanel(focus) {
@@ -316,6 +416,7 @@ function postGraphToPanel(focus) {
     edges: graph.edges,
     kinds: Array.from(enabledKinds),
     externals: showExternals,
+    root: rootLabel(),
     focus: focus || null,
   });
 }
@@ -353,6 +454,7 @@ function showDiagram(focus) {
   wv.onDidReceiveMessage((msg) => {
     if (msg.type === "open") openSite(msg.file, msg.line);
     if (msg.type === "export") doExport(msg.payload);
+    if (msg.type === "setRoot") pickRoot();
     if (msg.type === "setExternals") {
       showExternals = !!msg.value;
       extContext.workspaceState.update("pyclassmap.externals", showExternals);
@@ -387,11 +489,21 @@ function activate(context) {
     showCollapseAll: true,
   });
   treeProvider.view = view;
+  updateViewDescription();
+
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration((e) => {
+      if (!e.affectsConfiguration("pyclassmap")) return;
+      updateViewDescription();
+      refresh(false);
+    })
+  );
 
   context.subscriptions.push(
     view,
     output,
     vscode.commands.registerCommand("pyclassmap.refresh", () => refresh(false)),
+    vscode.commands.registerCommand("pyclassmap.setRoot", pickRoot),
     vscode.commands.registerCommand("pyclassmap.filter", pickKinds),
     vscode.commands.registerCommand("pyclassmap.openSite", openSite),
     vscode.commands.registerCommand("pyclassmap.showDiagram", () => showDiagram(null)),

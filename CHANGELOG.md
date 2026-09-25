@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.6.0 — 2026-09-25
+
+- **Scope indicator**: the view header now shows which folder is being
+  analyzed and how many nodes were found.
+- **Set Folder to Map**: a folder button and command to change the analyzed
+  scope interactively — every directory containing Python is offered with
+  its file count, plus Browse… for paths outside the workspace. The diagram
+  toolbar shows the same scope as a clickable chip.
+- Changing any `pyclassmap.*` setting now re-analyzes immediately.
+- `pyclassmap.root` accepts absolute paths.
+
 ## 0.5.0 — 2026-09-25
 
 - **Externals toggle**: external base classes (`BaseModel`, `TypedDict`,

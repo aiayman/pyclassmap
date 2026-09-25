@@ -20,6 +20,7 @@
   let data = null; // {nodes, edges}
   let enabled = new Set();
   let showExternals = false;
+  let rootLabel = "";
   let focus = null;
   let search = "";
   let pan = { x: 40, y: 40, k: 1 };
@@ -141,6 +142,14 @@
         });
         toolbar.appendChild(btn);
       }
+    }
+    if (rootLabel) {
+      const rootBtn = document.createElement("button");
+      rootBtn.className = "root-chip";
+      rootBtn.textContent = "\u{1F4C1} " + rootLabel;
+      rootBtn.title = "Mapping this folder \u2014 click to change the scope";
+      rootBtn.addEventListener("click", () => vscode.postMessage({ type: "setRoot" }));
+      toolbar.appendChild(rootBtn);
     }
     const pdf = document.createElement("button");
     pdf.textContent = "export PDF/SVG";
@@ -483,6 +492,7 @@
       data = { nodes: msg.nodes, edges: msg.edges };
       enabled = new Set(msg.kinds);
       showExternals = !!msg.externals;
+      if (msg.root) rootLabel = msg.root;
       if (msg.focus) focus = msg.focus;
       render();
     }

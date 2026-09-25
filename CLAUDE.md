@@ -16,6 +16,12 @@ build step; the analyzer is stdlib-only Python.
   member,transient,received,calls,inherits` then `convert -density 110
   images/hero.svg images/hero.png`. The docstrings shot uses `--focus
   expense_tracker.storage.JsonStore --docs`.
+- Regenerate the feature GIFs: `node scripts/render_gif.js demo images`
+  (needs ImageMagick `convert`). Frames share one canvas and are written
+  full-frame with `-dispose Background` — `-layers optimize` makes them
+  ghost onto each other.
+- `scripts/layout.js` is the layout engine shared by both renderers; it
+  mirrors `media/diagram.js`, so keep the two in step.
 - `demo/expense_tracker` is a runnable expense tracker written to exercise
   all five relationship kinds (it is the only source of README imagery).
 - Marketplace publishing: use `npx @vscode/vsce`, not build_vsix.py — see

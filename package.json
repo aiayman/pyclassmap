@@ -1,8 +1,8 @@
 {
   "name": "pyclassmap",
   "displayName": "Python Class Map",
-  "description": "See your Python project's real architecture: who creates, holds, calls, and inherits whom — as a tree and an interactive diagram, with PDF/SVG export.",
-  "version": "0.5.0",
+  "description": "See your Python project's real architecture: who creates, holds, calls, and inherits whom \u2014 as a tree and an interactive diagram, with PDF/SVG export.",
+  "version": "0.6.0",
   "publisher": "ayman",
   "license": "MIT",
   "icon": "images/icon.png",
@@ -60,6 +60,11 @@
         "icon": "$(refresh)"
       },
       {
+        "command": "pyclassmap.setRoot",
+        "title": "PyClassMap: Set Folder to Map",
+        "icon": "$(folder-opened)"
+      },
+      {
         "command": "pyclassmap.showDiagram",
         "title": "PyClassMap: Show Diagram",
         "icon": "$(type-hierarchy)"
@@ -91,19 +96,24 @@
           "group": "navigation@1"
         },
         {
-          "command": "pyclassmap.showDiagram",
+          "command": "pyclassmap.setRoot",
           "when": "view == pyclassmap.tree",
           "group": "navigation@2"
         },
         {
-          "command": "pyclassmap.filter",
+          "command": "pyclassmap.showDiagram",
           "when": "view == pyclassmap.tree",
           "group": "navigation@3"
         },
         {
-          "command": "pyclassmap.exportPdf",
+          "command": "pyclassmap.filter",
           "when": "view == pyclassmap.tree",
           "group": "navigation@4"
+        },
+        {
+          "command": "pyclassmap.exportPdf",
+          "when": "view == pyclassmap.tree",
+          "group": "navigation@5"
         }
       ],
       "view/item/context": [
@@ -124,11 +134,13 @@
         "pyclassmap.root": {
           "type": "string",
           "default": "",
-          "description": "Folder to analyze, relative to the workspace root. Empty = whole workspace."
+          "description": "Folder to analyze, relative to the workspace root (or an absolute path). Empty = whole workspace. Easiest to set with the folder button in the Python Class Map view."
         },
         "pyclassmap.exclude": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "default": [],
           "description": "Extra directory names to exclude from analysis."
         },

@@ -92,3 +92,9 @@ g.node text.doc {
 g.node { cursor: pointer; }
 g.node.focused rect { stroke-width: 2.5; }
 g.node.dim, path.edge.dim { opacity: 0.15; }
+
+#toolbar button.root-chip {
+  background: var(--vscode-badge-background, #4453);
+  color: var(--vscode-badge-foreground, inherit);
+  font-family: var(--vscode-editor-font-family, monospace);
+}
