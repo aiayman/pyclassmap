@@ -14,3 +14,6 @@ expenses.json
 # python bytecode
 __pycache__/
 *.py[cod]
+
+# personal workspace settings (the folder picker writes pyclassmap.root here)
+.vscode/
