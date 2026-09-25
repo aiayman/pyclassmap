@@ -1,5 +1,8 @@
 # Python Class Map
 
+[![VS Marketplace](https://img.shields.io/visual-studio-marketplace/v/iayman.pyclassmap?label=VS%20Marketplace&color=2b6cb0)](https://marketplace.visualstudio.com/items?itemName=iayman.pyclassmap)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/iayman.pyclassmap?color=2f855a)](https://marketplace.visualstudio.com/items?itemName=iayman.pyclassmap)
+
 **See your Python project's real architecture: who creates whom.**
 
 UML tools like pyreverse show *inheritance* — but in most modern Python
