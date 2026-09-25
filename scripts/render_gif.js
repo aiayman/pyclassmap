@@ -39,6 +39,61 @@ function arrow(tipX, tipY, dx, dy, kind) {
   return `<polygon points="${pts}" fill="${kind === "inherits" ? BG : KIND_COLOR[kind]}" stroke="${KIND_COLOR[kind]}" stroke-width="1"/>`;
 }
 
+// Count .py files per directory, the same way the extension's picker does.
+function pyDirCounts(base) {
+  const counts = new Map();
+  const walk = (dir) => {
+    let n = 0;
+    for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (ent.isDirectory()) {
+        if (ent.name.startsWith(".") || ent.name === "node_modules" || ent.name === "__pycache__") continue;
+        n += walk(path.join(dir, ent.name));
+      } else if (ent.name.endsWith(".py")) n++;
+    }
+    if (n) counts.set(dir, n);
+    return n;
+  };
+  walk(base);
+  return counts;
+}
+
+function pickerRows(base, currentRel, selectedRel) {
+  const rows = [...pyDirCounts(base).entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([dir, n]) => {
+      const rel = path.relative(base, dir);
+      return {
+        label: rel || path.basename(base),
+        desc:
+          `${n} .py file${n === 1 ? "" : "s"}` +
+          (rel ? "" : "  \u2014  whole workspace") +
+          (rel === currentRel ? "  \u2022  current" : ""),
+        selected: rel === selectedRel,
+      };
+    });
+  rows.push({ label: "Browse\u2026", desc: "choose any folder", browse: true, selected: false });
+  return rows;
+}
+
+// A faithful sketch of the VS Code quick pick, drawn over the dimmed graph.
+function renderPickerOverlay(o, picker, W, H) {
+  o.push(`<rect x="0" y="${TOOLBAR_H}" width="${W}" height="${H - TOOLBAR_H}" fill="#000" opacity="0.35"/>`);
+  const pw = 560, px = (W - pw) / 2, py = TOOLBAR_H + 8;
+  const ph = 40 + picker.rows.length * 26 + 6;
+  o.push(`<rect x="${px}" y="${py}" width="${pw}" height="${ph}" rx="6" fill="#252526" stroke="#454545"/>`);
+  o.push(`<rect x="${px + 8}" y="${py + 8}" width="${pw - 16}" height="24" rx="2" fill="#3c3c3c" stroke="#007fd4"/>`);
+  o.push(`<text x="${px + 16}" y="${py + 24}" font-family="Helvetica,Arial,sans-serif" font-size="12" fill="#8b8b8b">${esc(picker.placeholder)}</text>`);
+  let ry = py + 40;
+  for (const r of picker.rows) {
+    if (r.selected) o.push(`<rect x="${px + 4}" y="${ry}" width="${pw - 8}" height="26" rx="3" fill="#04395e"/>`);
+    const ix = px + 14, iy = ry + 6;
+    o.push(`<path d="M ${ix} ${iy + 2} h4.5 l1.5 2 h6 v9 h-12 z" fill="none" stroke="#c8ab6d" stroke-width="1.1"/>`);
+    o.push(`<text x="${ix + 20}" y="${ry + 17}" font-family="Helvetica,Arial,sans-serif" font-size="12" fill="#e8e8e8">${esc(r.label)}</text>`);
+    if (r.desc) o.push(`<text x="${ix + 20 + r.label.length * 7.3 + 10}" y="${ry + 17}" font-family="Helvetica,Arial,sans-serif" font-size="11" fill="#9d9d9d">${esc(r.desc)}</text>`);
+    ry += 26;
+  }
+}
+
 // frame = { nodes, edges, kinds, root, caption, highlightKind }
 function renderFrame(frame, W, H, originX, originY) {
   const o = [];
@@ -93,6 +148,7 @@ function renderFrame(frame, W, H, originX, originY) {
       o.push(`<text x="${(nx + 11).toFixed(1)}" y="${(ny + 42 + i * 14).toFixed(1)}" font-family="Helvetica,Arial,sans-serif" font-size="10" font-style="italic" fill="${MUTED}">${esc(ln)}</text>`);
     });
   }
+  if (frame.picker) renderPickerOverlay(o, frame.picker, W, H);
   o.push("</svg>");
   return o.join("\n");
 }
@@ -172,12 +228,19 @@ const mk = (o) => computeView({ data, showExternals: false, ...o });
   const wideName = path.basename(path.resolve("."));
   const vWide = computeView({ data: wide, kinds, showExternals: false, focus: null });
   const vDemo = mk({ kinds, focus: null });
+  const base = path.resolve(".");
+  const demoF = { nodes: vDemo.nodes, edges: vDemo.edges, kinds, root: rootName };
+  const wideF = { nodes: vWide.nodes, edges: vWide.edges, kinds, root: wideName };
   const frames = [
-    { nodes: vDemo.nodes, edges: vDemo.edges, kinds, root: rootName, caption: "mapping demo/ only" },
-    { nodes: vWide.nodes, edges: vWide.edges, kinds, root: wideName, caption: "widened to the whole workspace \u2014 the analyzer itself joins the map" },
-    { nodes: vDemo.nodes, edges: vDemo.edges, kinds, root: rootName, caption: "tightened back to demo/ with the folder picker" },
+    { ...demoF, caption: "mapping demo/ only" },
+    { ...demoF, caption: "the folder button lists every Python root it finds in the workspace",
+      picker: { placeholder: "currently mapping: demo", rows: pickerRows(base, "demo", "") } },
+    { ...wideF, caption: "widened to the whole workspace \u2014 the analyzer itself joins the map" },
+    { ...wideF, caption: "picking demo/ tightens the scope again",
+      picker: { placeholder: `currently mapping: ${wideName}`, rows: pickerRows(base, "", "demo") } },
+    { ...demoF, caption: "tightened back to demo/" },
   ];
-  build("scope.gif", frames, [240, 320, 300]);
+  build("scope.gif", frames, [220, 360, 280, 340, 300]);
 }
 
 // 4) focus: whole project down to one subtree

@@ -40,7 +40,7 @@ counts and the current one marked, plus **Browse…** for anywhere else. Widen
 to the whole workspace or narrow to a single package in two clicks; the
 analysis re-runs immediately.
 
-![Widening the scope to the whole workspace, then tightening back to one folder](images/scope.gif)
+![The folder picker listing every Python root it discovered, then widening to the whole workspace and tightening back](images/scope.gif)
 
 ### 🔗 Five relationship kinds
 
