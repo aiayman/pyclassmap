@@ -3,7 +3,7 @@
   "displayName": "Python Class Map",
   "description": "See your Python project's real architecture: who creates, holds, calls, and inherits whom \u2014 as a tree and an interactive diagram, with PDF/SVG export.",
   "version": "0.6.0",
-  "publisher": "aiayman",
+  "publisher": "iayman",
   "license": "MIT",
   "icon": "images/icon.png",
   "galleryBanner": {
